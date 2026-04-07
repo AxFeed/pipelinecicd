@@ -1,55 +1,72 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches: [main]
+
 permissions:
   contents: write   # requis pour mkdocs gh-deploy
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     steps:
       # 1. Checkout du code
       - name: Checkout
         uses: actions/checkout@v4
+
       # 2. Python 3.11
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       # 3. Dépendances backend
       - name: Install backend dependencies
         run: pip install -r backend/requirements.txt
-      # 5. Entraîner le modèle (nécessaire pour les tests)
-      - name: Train model
-        run: python backend/ml/train.py
-      # 6. Lint et format avec ruff
+
+      # 4. Lint avec ruff
       - name: Lint and format check with ruff
         run: |
           pip install ruff
           ruff check backend/
           ruff format --check backend/
-      # 7. Tests
+
+      # 5. Entraîner le modèle (nécessaire pour les tests)
+      - name: Train model
+        env:
+          MLFLOW_TRACKING_URI: ./mlruns
+        run: python backend/ml/train.py
+
+      # 6. Tests
       - name: Run tests
         run: pytest backend/tests/ -v
-      # 8. Déploiement documentation
+
+      # 7. Déploiement documentation
       - name: Install MkDocs Material
         run: pip install mkdocs-material
+
       - name: Configure Git for gh-deploy
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Deploy documentation
         run: mkdocs gh-deploy --force --config-file docs/mkdocs.yml
-      # 9. Setup Buildx (requis pour build-push-action v6)
+
+      # 8. Setup Buildx (requis pour build-push-action v6)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      # 10. Login DockerHub
+
+      # 9. Login DockerHub
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # 11. Build & Push backend
+
+      # 10. Build & Push backend
       - name: Build and push backend
         uses: docker/build-push-action@v6
         with:
@@ -58,7 +75,8 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/iris-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      # 12. Build & Push frontend
+
+      # 11. Build & Push frontend
       - name: Build and push frontend
         uses: docker/build-push-action@v6
         with:
@@ -67,9 +85,11 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/iris-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      # 13. Déclencher le redéploiement Azure backend
+
+      # 12. Déclencher le redéploiement Azure backend
       - name: Trigger Azure redeploy backend
         run: curl -X POST "${{ secrets.AZURE_WEBHOOK_BACKEND }}"
-      # 14. Déclencher le redéploiement Azure frontend
+
+      # 13. Déclencher le redéploiement Azure frontend
       - name: Trigger Azure redeploy frontend
         run: curl -X POST "${{ secrets.AZURE_WEBHOOK_FRONTEND }}"
