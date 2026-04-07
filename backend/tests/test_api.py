@@ -17,7 +17,6 @@ def test_health():
 
 
 def test_predict_setosa():
-    """Valeurs typiques de setosa"""
     r = client.post("/predict", json={"features": [5.1, 3.5, 1.4, 0.2]})
     assert r.status_code == 200
     body = r.json()
@@ -26,14 +25,12 @@ def test_predict_setosa():
 
 
 def test_predict_virginica():
-    """Valeurs typiques de virginica"""
     r = client.post("/predict", json={"features": [6.7, 3.0, 5.2, 2.3]})
     assert r.status_code == 200
     assert r.json()["label"] in ["versicolor", "virginica"]
 
 
 def test_predict_wrong_nb_features():
-    """Doit retourner 422 si pas exactement 4 features"""
     r = client.post("/predict", json={"features": [1.0, 2.0]})
     assert r.status_code == 422
 
