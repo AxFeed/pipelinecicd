@@ -1,0 +1,11 @@
+site_name: Iris CI/CD Project
+site_description: Pipeline CI/CD complet avec FastAPI, MLflow, Docker et Azure
+theme:
+  name: material
+  palette:
+    primary: deep purple
+nav:
+  - Accueil: index.md
+  - API: api.md
+  - Pipeline CI/CD: pipeline.md
+  - Déploiement Azure: azure.md
