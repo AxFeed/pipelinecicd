@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="Iris Classifier", page_icon="🌸", layout="centered")
-st.title("🌸 Iris Flower Classifier dsbfdfdsfdsfdsfdshdshgdsgfdsggfgf")
+st.title("🌸 Iris Flower Classifier Les filles en face de moi sont parfaites")
 st.markdown("Entrez les mesures de la fleur pour obtenir une prédiction.")
 
 col1, col2 = st.columns(2)
