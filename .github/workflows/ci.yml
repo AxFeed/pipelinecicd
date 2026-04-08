@@ -98,14 +98,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # 13. Déploiement Azure backend
-      - name: Deploy backend to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: <NOM_APP_BACKEND>
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE_BACKEND }}
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/iris-backend:latest
-
       # 14. Déploiement Azure frontend
       - name: Deploy frontend to Azure App Service
         uses: azure/webapps-deploy@v3
