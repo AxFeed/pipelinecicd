@@ -15,10 +15,7 @@ from sklearn.model_selection import train_test_split
 # =========================
 # LOGGING
 # =========================
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 # Optionnel : réduit le bruit CodeCarbon
@@ -28,8 +25,8 @@ logging.getLogger("codecarbon").setLevel(logging.ERROR)
 # =========================
 # PATHS
 # =========================
-BASE_DIR = Path(__file__).resolve().parent          # backend/ml
-PROJECT_DIR = BASE_DIR.parent                       # backend
+BASE_DIR = Path(__file__).resolve().parent  # backend/ml
+PROJECT_DIR = BASE_DIR.parent  # backend
 
 MODEL_DIR = PROJECT_DIR / "model"
 MODEL_PATH = MODEL_DIR / "model.pkl"
@@ -54,9 +51,7 @@ def train():
     X, y = iris.data, iris.target
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=0.2,
-        random_state=42
+        X, y, test_size=0.2, random_state=42
     )
 
     mlflow.set_experiment("iris-classification")
@@ -66,19 +61,14 @@ def train():
         project_name="iris-training",
         output_dir=str(BASE_DIR),
         output_file="emissions.csv",
-        gpu_ids=[]  # désactive GPU tracking pour éviter warnings inutiles
+        gpu_ids=[],  # désactive GPU tracking pour éviter warnings inutiles
     )
 
     with mlflow.start_run(run_name="RandomForest-iris"):
-
         tracker.start()
 
         try:
-            params = {
-                "n_estimators": 100,
-                "max_depth": 5,
-                "random_state": 42
-            }
+            params = {"n_estimators": 100, "max_depth": 5, "random_state": 42}
 
             model = RandomForestClassifier(**params)
             model.fit(X_train, y_train)
